@@ -1,5 +1,5 @@
-from textnode import TextNode, TextType
-from htmlnode import HTMLNode, ParentNode
+from src.textnode import TextNode, TextType
+from src.htmlnode import HTMLNode, ParentNode
 
 
 def main():
