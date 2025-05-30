@@ -4,9 +4,6 @@ from src.textnode import TextNode, TextType
 
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
-    if not old_nodes:
-        raise Exception("Invalid or empty list of nodes")
-
     new_nodes = []
 
     for node in old_nodes:
@@ -44,3 +41,55 @@ def extract_markdown_images(text):
 def extract_markdown_links(text):
     pattern = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
     return re.findall(pattern, text)
+
+
+def partition_nodes_by_media(old_nodes, media_asset_type):
+    new_nodes = []
+
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+
+        text_content = node.text
+
+        if media_asset_type == TextType.IMAGE:
+            asset_list = extract_markdown_images(text_content)
+        elif media_asset_type == TextType.LINK:
+            asset_list = extract_markdown_links(text_content)
+        else:
+            raise Exception("Invalid asset type: non image or link")
+
+        if len(asset_list) == 0:
+            new_nodes.append(node)
+            continue
+
+        for asset_node in asset_list:
+            alt_text = asset_node[0]
+            link = asset_node[1]
+
+            if media_asset_type == TextType.IMAGE:
+                delimiter = f"![{alt_text}]({link})"
+            elif media_asset_type == TextType.LINK:
+                delimiter = f"[{alt_text}]({link})"
+
+            sections = text_content.split(delimiter, 1)
+
+            if len(sections[0]) != 0:
+                new_nodes.append(TextNode(sections[0], TextType.TEXT))
+
+            new_nodes.append(TextNode(alt_text, media_asset_type, link))
+            text_content = sections[1]
+
+        if len(text_content) != 0:
+            new_nodes.append(TextNode(text_content, TextType.TEXT))
+
+    return new_nodes
+
+
+def split_nodes_image(old_nodes):
+    return partition_nodes_by_media(old_nodes, TextType.IMAGE)
+
+
+def split_nodes_link(old_nodes):
+    return partition_nodes_by_media(old_nodes, TextType.LINK)
