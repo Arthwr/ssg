@@ -7,6 +7,7 @@ from src.inline_markdown import (
     split_nodes_delimiter,
     split_nodes_image,
     split_nodes_link,
+    text_to_textnodes,
 )
 
 
@@ -264,6 +265,53 @@ class TestInlineMarkdown(unittest.TestCase):
         )
         new_nodes = split_nodes_link([node])
         self.assertListEqual([node], new_nodes)
+
+    def test_text_to_textnodes(self):
+        node_split = text_to_textnodes(
+            "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        )
+
+        expected_split = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode(
+                "obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
+            ),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+        ]
+
+        self.assertListEqual(node_split, expected_split)
+
+    def test_text_to_textnodes_multiple_formats(self):
+        node_split = text_to_textnodes(
+            "**Bold** then _italic_, followed by `code`, then an image ![cat](https://example.com/cat.jpg), "
+            "and a link [Google](https://google.com). More **bold _not italic_** and final `code`."
+        )
+
+        expected_split = [
+            TextNode("Bold", TextType.BOLD),
+            TextNode(" then ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(", followed by ", TextType.TEXT),
+            TextNode("code", TextType.CODE),
+            TextNode(", then an image ", TextType.TEXT),
+            TextNode("cat", TextType.IMAGE, "https://example.com/cat.jpg"),
+            TextNode(", and a link ", TextType.TEXT),
+            TextNode("Google", TextType.LINK, "https://google.com"),
+            TextNode(". More ", TextType.TEXT),
+            TextNode("bold _not italic_", TextType.BOLD),
+            TextNode(" and final ", TextType.TEXT),
+            TextNode("code", TextType.CODE),
+            TextNode(".", TextType.TEXT),
+        ]
+
+        self.assertListEqual(node_split, expected_split)
 
 
 if __name__ == "__main__":
