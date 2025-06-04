@@ -1,6 +1,6 @@
 from enum import Enum
 
-from src.htmlnode import HTMLNode, ParentNode, LeafNode
+from src.htmlnode import ParentNode
 from src.textnode import TextNode, TextType
 from src.inline_markdown import text_to_textnodes
 from src.textnode import text_node_to_html_node
@@ -68,8 +68,10 @@ def heading_to_html_node(block):
             level += 1
         else:
             break
+
     if level + 1 >= len(block):
-        raise Exception(f"invalid heading level: {level}")
+        raise ValueError(f"invalid heading level: {level}")
+
     text = block[level + 1 :]
     children = text_to_children(text)
 
@@ -79,6 +81,7 @@ def heading_to_html_node(block):
 def code_to_html_node(block):
     if not block.startswith("```") or not block.endswith("```"):
         raise ValueError("invalid code block")
+
     text = block[4:-3]
     raw_text_node = TextNode(text, TextType.TEXT)
     child = text_node_to_html_node(raw_text_node)
@@ -90,10 +93,13 @@ def code_to_html_node(block):
 def quote_to_html_node(block):
     lines = block.split("\n")
     new_lines = []
+
     for line in lines:
         if not line.startswith(">"):
             raise ValueError("invalid quote block")
+
         new_lines.append(line.lstrip(">").strip())
+
     content = " ".join(new_lines)
     children = text_to_children(content)
 
@@ -103,6 +109,7 @@ def quote_to_html_node(block):
 def ulist_to_html_node(block):
     items = block.split("\n")
     html_items = []
+
     for item in items:
         text = item[2:]
         children = text_to_children(text)
@@ -114,6 +121,7 @@ def ulist_to_html_node(block):
 def olist_to_html_node(block):
     items = block.split("\n")
     html_items = []
+
     for item in items:
         text = item[3:]
         children = text_to_children(text)

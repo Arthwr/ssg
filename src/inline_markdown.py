@@ -15,7 +15,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
         parts = node.text.split(delimiter)
 
         if len(parts) % 2 == 0:
-            raise Exception("Invalid markdown: delimiter was not closed")
+            raise ValueError("Invalid markdown: delimiter was not closed")
 
         for i in range(len(parts)):
             if len(parts[i]) == 0:
@@ -58,7 +58,7 @@ def partition_nodes_by_media(old_nodes, media_asset_type):
         elif media_asset_type == TextType.LINK:
             asset_list = extract_markdown_links(text_content)
         else:
-            raise Exception("Invalid asset type: non image or link")
+            raise ValueError("Invalid asset type: non image or link")
 
         if len(asset_list) == 0:
             new_nodes.append(node)
