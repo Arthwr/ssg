@@ -1,5 +1,8 @@
+from copystatic import convert_static_to_public
+
+
 def main():
-    pass
+    convert_static_to_public("static", "public")
 
 
 main()
