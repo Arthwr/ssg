@@ -8,6 +8,7 @@ from src.inline_markdown import (
     split_nodes_image,
     split_nodes_link,
     text_to_textnodes,
+    extract_title,
 )
 
 
@@ -154,6 +155,26 @@ class TestInlineMarkdown(unittest.TestCase):
             ],
             matches,
         )
+
+    def test_extract_title(self):
+        markdown = "# Hello World"
+        title = extract_title(markdown)
+
+        self.assertEqual(title, "Hello World")
+
+    def test_extract_title_from_bottom(self):
+        markdown = "### Hello World\n ## Hi\n# Once upon a time"
+        title = extract_title(markdown)
+
+        self.assertEqual(title, "Once upon a time")
+
+    def test_no_title_provided(self):
+        markdown = "Some paragraph text\n also another one\n ## while no title provided"
+        
+        with self.assertRaises(Exception) as context:
+            extract_title(markdown)
+        
+        self.assertEqual(str(context.exception), "No h1 title has been provided")
 
     def test_split_image_single(self):
         node = TextNode(

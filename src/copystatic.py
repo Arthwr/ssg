@@ -16,7 +16,7 @@ def recursive_copy(source_folder, target_folder):
             recursive_copy(src_path, dest_path)
 
 
-def convert_static_to_public(source, target):
+def copy_static_files(source, target):
     if not os.path.isdir(source):
         raise Exception(f"No {source} folder found")
 

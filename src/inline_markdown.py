@@ -1,6 +1,6 @@
 import re
 
-from src.textnode import TextNode, TextType
+from textnode import TextNode, TextType
 
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
@@ -41,6 +41,14 @@ def extract_markdown_images(text):
 def extract_markdown_links(text):
     pattern = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
     return re.findall(pattern, text)
+
+
+def extract_title(markdown):
+    for block_markdown in markdown.split("\n"):
+        if block_markdown.startswith("#") and len(block_markdown.split(" ", 1)[0]) == 1:
+            return block_markdown[2:].strip()
+
+    raise Exception("No h1 title has been provided")
 
 
 def partition_nodes_by_media(old_nodes, media_asset_type):
