@@ -25,5 +25,4 @@ def copy_static_files(source, target):
         shutil.rmtree(target)
 
     os.mkdir(target)
-    print("Copying static files to public directory:")
     recursive_copy(source, target)

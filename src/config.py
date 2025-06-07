@@ -1,0 +1,4 @@
+STATIC_FILES_DIRECTORY = "static"
+INPUT_CONTENT_DIRECTORY = "content"
+TEMPLATE_FILE_PATH = "template.html"
+OUTPUT_DIRECTORY = "docs"
